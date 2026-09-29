@@ -72,7 +72,7 @@ export function useApi() {
 
 
 
-   // 🔐 Mostrar temporalmente el JWT en la consola
+   // Token JWT tokencito
 
    console.log("ACCESS TOKEN (JWT):", token);
 
