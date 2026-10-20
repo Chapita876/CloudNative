@@ -1,68 +1,57 @@
-import { useEffect, useState } from "react";
-import { useApi } from "../useApi";
-import { mockCatalog, delay } from "../mocks/mockData";
-import type { Product } from "../types";
+import { Link, useLocation } from "react-router-dom";
+import { useCatalog } from "../useCatalog";
+import { LoadState, PageHeader } from "../components/ui";
+import { clp } from "../lib/orders";
+import { ProductImage } from "../components/ProductImage";
 
-export default function Catalog() {
-  const { fetchWithToken, isMock } = useApi();
-  const [products, setProducts] = useState<Product[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    async function load() {
-      setLoading(true);
-      setError(null);
-      try {
-        if (isMock) {
-          const data = await delay(mockCatalog);
-          if (!cancelled) setProducts(data);
-        } else {
-          // GET /catalog -> Lambda catalog-list (sección 8 de la guía)
-          const res = await fetchWithToken("/catalog");
-          if (!res.ok) throw new Error(`Error ${res.status} al cargar catálogo`);
-          const data: Product[] = await res.json();
-          if (!cancelled) setProducts(data);
-        }
-      } catch (e) {
-        if (!cancelled) setError(e instanceof Error ? e.message : "Error desconocido");
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    }
-
-    load();
-    return () => {
-      cancelled = true;
-    };
-  }, [isMock]);
-
-  if (loading) return <p>Cargando catálogo…</p>;
-  if (error) return <p style={{ color: "crimson" }}>{error}</p>;
+/** Catálogo compartido. `showStock` lo usan operador y admin para ver inventario. */
+export default function Catalog({ showStock = false }: { showStock?: boolean }) {
+  const { products, loading, error } = useCatalog();
+  const base = useLocation().pathname.replace(/\/$/, "");
 
   return (
-    <div>
-      <h1>Catálogo</h1>
-      {isMock && (
-        <p style={{ fontSize: "0.85rem", color: "#888" }}>
-          Mostrando datos de prueba (no hay backend conectado todavía).
-        </p>
+    <div className="p3-page">
+      <PageHeader
+        title={showStock ? "Inventario" : "Catálogo de productos"}
+        subtitle={showStock ? "Stock disponible y precios." : "Explora los artículos disponibles."}
+      />
+      <LoadState loading={loading} error={error} />
+      {!loading && !error && products.length === 0 && (
+        <div className="p3-card p3-empty">No hay productos disponibles en este momento.</div>
       )}
-      {products.length === 0 ? (
-        <p>No hay productos.</p>
-      ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", gap: "1rem" }}>
+      {!loading && products.length > 0 && (
+        <div className="p3-grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))" }}>
           {products.map((p) => (
-            <div key={p.id} style={{ border: "1px solid #eee", borderRadius: 8, padding: "1rem" }}>
-              <h3 style={{ margin: 0 }}>{p.nombre}</h3>
-              <p style={{ color: "#888", margin: "0.25rem 0" }}>{p.categoria}</p>
-              <p style={{ fontWeight: 600 }}>${p.precio.toLocaleString("es-CL")}</p>
-              <p style={{ color: p.stock === 0 ? "crimson" : "#333" }}>
-                {p.stock === 0 ? "Sin stock" : `Stock: ${p.stock}`}
-              </p>
-            </div>
+            <Link
+              key={p.id}
+              to={`${base}/${encodeURIComponent(p.id)}`}
+              className="p3-card"
+              style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", padding: 0, overflow: "hidden", textDecoration: "none", color: "inherit" }}
+            >
+              <ProductImage nombre={p.nombre} categoria={p.categoria} src={p.imagen} />
+              <div style={{ padding: "16px 20px 0" }}>
+                <div className="p3-row" style={{ marginBottom: 10 }}>
+                  <span style={{ fontSize: ".72rem", fontWeight: 600, color: "#2563eb", textTransform: "uppercase", background: "#eff6ff", padding: "2px 8px", borderRadius: 4 }}>
+                    {p.categoria}
+                  </span>
+                  {(showStock || p.stock <= 0) && (
+                    <span style={{ fontSize: ".78rem", fontWeight: 600, color: p.stock > 5 ? "#059669" : p.stock > 0 ? "#d97706" : "#dc2626" }}>
+                      {p.stock > 0 ? `${p.stock} en stock` : "Agotado"}
+                    </span>
+                  )}
+                </div>
+                <h3 style={{ margin: "0 0 6px" }}>{p.nombre}</h3>
+                {p.descripcion && (
+                  <p style={{ margin: "0 0 14px", fontSize: ".85rem", color: "#6b7280", display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>
+                    {p.descripcion}
+                  </p>
+                )}
+              </div>
+              <div className="p3-row" style={{ borderTop: "1px solid #f3f4f6", padding: "12px 20px 16px", alignItems: "center" }}>
+                <span style={{ fontSize: ".85rem", color: "#6b7280" }}>Precio unitario</span>
+                <strong style={{ fontSize: "1.2rem" }}>{clp(p.precio)}</strong>
+              </div>
+            </Link>
           ))}
         </div>
       )}

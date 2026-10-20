@@ -13,17 +13,15 @@ body {
   min-height: 100vh;
 }
 
-/* NAVBAR */
-
 .navbar {
   height: 76px;
   padding: 0 7%;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background: rgba(255, 255, 255, 0.94);
+  background: #ffffff;
   border-bottom: 1px solid #e7ebf2;
-  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
 }
 
 .brand {
@@ -63,8 +61,9 @@ body {
 }
 
 .user-info small {
-  color: #7b8497;
+  color: #2c3545 !important;
   margin-top: 3px;
+  font-weight: 500;
 }
 
 .logout-btn {
@@ -80,8 +79,6 @@ body {
 .logout-btn:hover {
   background: #e1e7ef;
 }
-
-/* HERO */
 
 .hero {
   max-width: 1250px;
@@ -120,7 +117,7 @@ body {
 }
 
 .hero p {
-  color: #697386;
+  color: #2c3545 !important;
   font-size: 18px;
   line-height: 1.7;
   max-width: 590px;
@@ -159,11 +156,10 @@ body {
 
 .security {
   margin-top: 18px;
-  color: #7d8798;
+  color: #2c3545 !important;
   font-size: 13px;
+  font-weight: 500;
 }
-
-/* PREVIEW */
 
 .hero-card {
   position: relative;
@@ -184,7 +180,7 @@ body {
 }
 
 .preview-header small {
-  color: #8a94a6;
+  color: #2c3545 !important;
 }
 
 .preview-header h3 {
@@ -225,7 +221,7 @@ body {
 }
 
 .stat-card small {
-  color: #8992a3;
+  color: #2c3545 !important;
 }
 
 .chart {
@@ -283,8 +279,6 @@ body {
   right: -35px;
 }
 
-/* DASHBOARD */
-
 .dashboard {
   max-width: 1200px;
   margin: auto;
@@ -297,7 +291,7 @@ body {
 }
 
 .welcome p {
-  color: #7a8496;
+  color: #2c3545 !important;
   font-size: 17px;
 }
 
@@ -337,7 +331,7 @@ body {
 }
 
 .module-card p {
-  color: #788295;
+  color: #2c3545 !important;
   line-height: 1.6;
 }
 
@@ -352,7 +346,28 @@ body {
   font-size: 15px;
 }
 
-/* RESPONSIVE */
+select, input, textarea {
+  background: #ffffff !important;
+  color: #172033 !important;
+  border: 1px solid #cbd5e1 !important;
+  border-radius: 8px;
+  padding: 10px 14px;
+  font-family: inherit;
+  font-size: 14px;
+  outline: none;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+select:focus, input:focus, textarea:focus {
+  border-color: #2563eb !important;
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15) !important;
+}
+
+option {
+  background: #ffffff !important;
+  color: #172033 !important;
+  padding: 10px;
+}
 
 @media (max-width: 900px) {
   .hero {
